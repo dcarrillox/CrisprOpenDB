@@ -1,3 +1,29 @@
+### dcarrillox edits
+Currently, the path to the sqlite database file is hardcoded in `CrisprOpenDB_HostID.py` (lines 102-103) so it needs
+to be in `CrisprOpenDB/SpacersDB/` as stated in the README.md . :
+
+~~~
+if self._connection is None:
+    self._connection = CrisprOpenDB.CrisprOpenDB(os.path.join("CrisprOpenDB", "SpacersDB", "CrisprOpenDB.sqlite"))
+~~~
+
+This is a problem since I want to put CrisprOpenDB in a Singularity container and `CrisprOpenDB.sqlite` is too heavy for that.
+I modify the code so the sqlite file can be outside of the repo. `blastdb` and `fastadb` files should not be a problem since there already
+options for specifying their paths.
+
+**Code modifications:**
+- `CL_Interface.py`
+  - Line 16: added option `-q` so user can specify path to `CrisprOpenDB.sqlite`
+  - Line 38, old 37: added `args.sqlitedb` as argument for `PhageHostFinder()`
+
+- `CrisprOpenDB_HostID.py`
+  - Lines 12-17: added `sqlite_db` to the definition of the Class
+  - Line 104, old 103: change the hardcoded path to the variable `sqlite_db`
+
+
+
+
+
 # CrisprOpenDB
 
 This command-line host prediction tool was implemented to run predictions for large numbers of phage genomes and to offer a more customized host prediction process. The method is described in the following paper, that you should cite in publications:
@@ -70,4 +96,3 @@ makeblastdb -in SpacersDB.fasta -dbtype nucl -out SpacersDB
 If you wish, you can also provide your own BLAST or FASTA database to perform the alignment.
 
 If you would like to manually further explore a prediction, you can use the `-t, --table` option. This will send the table containing both blast results and spacers information extracted from the spacers database to an external CSV file. Since one file per phage genome is issued, we recommend that you do not use this option when first running the tool (especially with large datasets), but rather use it afterwards if you need further information on a specific genome.
-

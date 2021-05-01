@@ -2,7 +2,7 @@ from CrisprOpenDB.CrisprOpenDB_HostID import PhageHostFinder
 import argparse
 
 if __name__ == "__main__":
-    
+
     parser = argparse.ArgumentParser()
     parser.add_argument("-i", "--input", help="Input file in FASTA format.", type=str, required=True)
     parser.add_argument("-m", "--mismatch", help="Number of mismatches. Value must be between 0 and 5. If not specified, default value is 2.", type=int, default=2)
@@ -13,12 +13,14 @@ if __name__ == "__main__":
     parser.add_argument("-f", "--fastadb", help="Fasta database to use for alignment.", type=str, default=None)
     parser.add_argument("-u", "--unknown", help="Keep spacers with unknown genus for prediction. False if not specified.", action="store_true")
     parser.add_argument("-n", "--num_threads", help="Number of threads (>=1) to use for the alignment. Default is 1.", type=int, default=1)
+    parser.add_argument("-q", "--sqlitedb", help="Location of the 'CrisprOpenDB.sqlite' file", type=str, default=None)
+
     args = parser.parse_args()
 
     if args.mismatch < 0 or args.mismatch > 5:
         parser.print_help()
         exit()
-    
+
     if args.aligner not in ["blast", "fasta36"]:
         parser.print_help()
         exit()
@@ -31,10 +33,10 @@ if __name__ == "__main__":
         exit()
 
     if (args.blastdb != None and args.fastadb != None):
-        print("Please use only one of the following options:\n-b, --blastdb\n-f, --fastadb")   
+        print("Please use only one of the following options:\n-b, --blastdb\n-f, --fastadb")
         exit()
     elif args.blastdb:
-        phf = PhageHostFinder(args.blastdb, None)
+        phf = PhageHostFinder(args.blastdb, None, args.sqlitedb)
     elif args.fastadb:
         phf = PhageHostFinder(None, args.fastadb)
     else:
