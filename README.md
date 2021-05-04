@@ -20,9 +20,31 @@ options for specifying their paths.
   - Lines 12-17: added `sqlite_db` to the definition of the Class
   - Line 104, old 103: change the hardcoded path to the variable `sqlite_db`
 
+It worked with this test:
 
+~~~
+$ python CrisprOpenDB/CL_Interface.py -i  CrisprOpenDB/TestGenomes/KJ489400.fasta -b SpacersDB -q CrisprOpenDB.sqlite
+('KJ489400.1', 'Bacillus', 1)
+~~~
 
+#### Singularity
+I create a Singularity container with the modifications. Definition file `CrisprOpenDB.def` for building the container is also in the repository.
+To do so:
 
+~~~
+$ sudo singularity build crisprpendb.sif CrisprOpenDB.def
+~~~
+
+Container is also available from `library://dcarrillo/default/crispropendb:0.1` .
+
+**IMPORTANT**: blastdb has to be built with the `makeblastdb` provided in the container, which is `blast 2.10.1`. This is to avoid version
+incompatibility issues. To do so:
+
+~~~
+$ singularity run library://dcarrillo/default/crispropendb:0.1 makeblastdb -in SpacersDB.fasta -out SpacersDB -dbtype nucl
+~~~
+
+---
 
 # CrisprOpenDB
 

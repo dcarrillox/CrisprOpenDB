@@ -1,0 +1,47 @@
+Bootstrap: docker
+From: continuumio/miniconda3
+
+%labels
+	Author "Moïra B Dion"
+	Maintainer and edits dcarrillox
+	Version 0.1 # from the setup.py file
+	Source https://github.com/edzuf/CrisprOpenDB
+	Edits https://github.com/dcarrillox/CrisprOpenDB
+	Publication https://academic.oup.com/nar/article/49/6/3127/6157093
+
+%post
+	# update OS
+	apt update && apt upgrade -y
+
+	# update conda
+	conda config --add channels conda-forge
+	conda config --add channels default
+	conda config --add channels bioconda
+	conda config --add channels r
+	conda update -y conda
+
+	# download repo
+	git clone https://github.com/dcarrillox/CrisprOpenDB.git
+
+	# create environment along with its dependencies
+	conda create --name CrisprOpenDB_env --file /CrisprOpenDB/conda_env.txt
+	conda clean --all -y
+
+	# do the conda init
+	echo ". /opt/conda/etc/profile.d/conda.sh" >> $SINGULARITY_ENVIRONMENT
+	echo "conda activate CrisprOpenDB_env" >> $SINGULARITY_ENVIRONMENT
+	. /opt/conda/etc/profile.d/conda.sh
+
+	# install
+	python /CrisprOpenDB/setup.py install
+
+%help
+	A container for CrisprOpenDB  v0.1
+	[https://github.com/edzuf/CrisprOpenDB].
+
+	To run CrisprOpenDB help:
+
+	$ singularity exec library://dcarrillo/default/CrisprOpenDB:0.1 python /CrisprOpenDB/CL_Interface.py -h
+
+	
+	
